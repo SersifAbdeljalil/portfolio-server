@@ -8,7 +8,6 @@ dotenv.config();
 
 // Initialiser l'application Express
 const app = express();
-const PORT = process.env.PORT || 5000;
 
 // Middleware
 app.use(cors());
@@ -23,16 +22,13 @@ app.get('/api/test', (req, res) => {
   res.json({ message: 'API fonctionne correctement' });
 });
 
-// Si en production, servir les fichiers statiques
-if (process.env.NODE_ENV === 'production') {
-  app.use(express.static(path.join(__dirname, '../build')));
-  
-  app.get('*', (req, res) => {
-    res.sendFile(path.join(__dirname, '../build', 'index.html'));
+// Pour le développement local seulement
+if (process.env.NODE_ENV !== 'production') {
+  const PORT = process.env.PORT || 5000;
+  app.listen(PORT, () => {
+    console.log(`Serveur démarré sur le port ${PORT}`);
   });
 }
 
-// Démarrer le serveur
-app.listen(PORT, () => {
-  console.log(`Serveur démarré sur le port ${PORT}`);
-});
+// Exporter l'application pour Vercel
+module.exports = app;
